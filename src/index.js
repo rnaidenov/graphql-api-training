@@ -66,6 +66,7 @@ const typeDefs = gql`
     trainings: [Training]
     training(id: ID!): Training
     discounts: [Discount]
+    discount(id: ID!): Discount
   }
 
   type Training {
@@ -74,7 +75,7 @@ const typeDefs = gql`
     objectives: String!, 
     curriculum: String!
     toUppercaseTitle: String!,
-    discounts: Discount
+    discounts: [Discount]
   }
 
   type Discount {
@@ -82,9 +83,8 @@ const typeDefs = gql`
     code: String
     discountPercentage: Int
     description: String
-    training: String
+    training: Training
   }
-
 `
 
 ;
@@ -96,17 +96,19 @@ const resolvers = {
     books: () => books,
     trainings: fetchTrainings,
     training: (parent, args) => fetchTrainingById(args.id),
-    discounts: fetchDiscounts 
+    discounts: fetchDiscounts,
+    discount: (parent, args) => fetchDiscountById(args.id),
   },
 
   // You can override the data - kind of like an middleware
   // Or add new functions that that bring back that that's not in the DB 
   Training: {
     toUppercaseTitle: (parent) => parent.title.toUpperCase(),
-    discounts : (parent, args) =>  fetchDiscountByUrl(parent.discounts[0])
+    discounts: (parent, args) => parent.discounts.map(discountUrl => fetchDiscountByUrl(discountUrl))
   },
   Discount: {
-    training: (parent) => parent.training.toUpperCase()
+    // training: (parent) => parent.training.toUpperCase()
+    training: (parent) => fetchTrainingByUrl(parent.training)
   }
 };
 
