@@ -63,14 +63,26 @@ const typeDefs = gql`
   # (A "Mutation" type will be covered later on.)
   type Query {
     books: [Book]
+    trainings: [Training]
   }
-`;
 
+  type Training {
+    title : String!,
+    id : ID!,
+    objectives: String!, 
+    curriculum: String!
+  }
+
+`
+
+;
+ 
 // Resolvers define the technique for fetching the types in the
 // schema.  We'll retrieve books from the "books" array above.
 const resolvers = {
   Query: {
-    books: () => books
+    books: () => books,
+    trainings: () => trainingMockData
   }
 };
 
