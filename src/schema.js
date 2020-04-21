@@ -57,9 +57,9 @@ const typeDefs = gql`
   }
 
   # 🚧 You must use this input
-  #   input DiscountFilter {
-  #     # 🚧 You must add something here
-  #   }
+   input DiscountFilter {
+        trainingId : ID!
+   }
 
   enum OrderDirection {
     # Specifies an ascending order for a given orderBy argument.
@@ -71,12 +71,12 @@ const typeDefs = gql`
   enum DiscountOrderField {
     expiresOn
     discountPercentage
-    # 🚧 You must add something here
+    code
   }
 
   input DiscountOrder {
-    field: String # 🚧 this field should not be a String, add the right type.
-    direction: String # 🚧 this field should not be a String, add the right type.
+    field: DiscountOrderField # 🚧 this field should not be a String, add the right type.
+    direction: OrderDirection # 🚧 this field should not be a String, add the right type.
   }
 
   scalar DateTime
@@ -96,8 +96,9 @@ const typeDefs = gql`
       first: Int
       before: String
       last: Int
+      filter: DiscountFilter
+      orderBy: DiscountOrder
     ): DiscountConnection
-
     discount(id: ID!): Discount
   }
 `;
@@ -109,7 +110,7 @@ const resolvers = {
 
     discounts: (_, args, { services }) => services.findDiscounts(args),
 
-    discount: (_, { id }, { services }) => services.findDiscountById(id)
+    discount: (_, { id }, { services }) => services.findDiscountById(id),
   },
   DateTime: GraphQLDateTime,
   OrderDirection: {
