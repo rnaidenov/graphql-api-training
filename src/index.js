@@ -64,6 +64,7 @@ const typeDefs = gql`
   type Query {
     books: [Book]
     trainings: [Training]
+    training(id: ID!): Training
     discounts: [Discount]
   }
 
@@ -72,6 +73,7 @@ const typeDefs = gql`
     id : ID!,
     objectives: String!, 
     curriculum: String!
+    toUppercaseTitle: String!
   }
 
   type Discount {
@@ -79,6 +81,7 @@ const typeDefs = gql`
     code: String
     discountPercentage: Int
     description: String
+    training: String
   }
 
 `
@@ -91,7 +94,17 @@ const resolvers = {
   Query: {
     books: () => books,
     trainings: fetchTrainings,
+    training: (parent, args) => fetchTrainingById(args.id),
     discounts: fetchDiscounts
+  },
+
+  // You can override the data - kind of like an middleware
+  // Or add new functions that that bring back that that's not in the DB 
+  Training: {
+    toUppercaseTitle: (parent) => parent.title.toUpperCase()
+  },
+  Discount: {
+    training: (parent) => parent.training.toUpperCase()
   }
 };
 
