@@ -47,8 +47,8 @@ function findDiscountById(id) {
   return db.models.Discount.findOne({ _id: id });
 }
 
-function findDiscountsByTrainingId(trainingId) {
-  return db.models.Discount.find({ _trainingId: trainingId });
+function findDiscountsByTrainingId(args, trainingId) {
+  return mrResolve(args, db.models.Discount, { _trainingId: trainingId });
 }
 
 module.exports = {

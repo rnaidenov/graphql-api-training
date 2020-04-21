@@ -21,6 +21,8 @@ module.exports = {
       typeDefs,
       resolvers,
       context: ({ req }) => ({
+        // Every resolve will have this in their 3rd argument
+        services
         // 🚧 Task: add here the services imported at the top of the file
         // More info about the context in ApolloServer https://www.apollographql.com/docs/apollo-server/data/resolvers/#the-context-argument
       }),

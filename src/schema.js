@@ -18,6 +18,7 @@ const typeDefs = gql`
     curriculum: String!
     overview: String
     startDate: DateTime
+    discounts: DiscountConnection
   }
 
   type TrainingEdge {
@@ -34,6 +35,17 @@ const typeDefs = gql`
     edges: [TrainingEdge]
     # total count is not part of GraphQL Cursor Connection Spec, but we can extend the spec
     totalCount: Int
+  }
+
+  type DiscountConnection {
+    edges: [DiscountEdge]
+    pageInfo: PageInfo!
+    totalCount: Int
+  }
+
+  type DiscountEdge {
+    node: Discount
+    cursor: String!
   }
 
   type Discount {
@@ -79,7 +91,12 @@ const typeDefs = gql`
 
     training(id: ID!): Training
 
-    discounts: [Discount!]
+    discounts(
+      after: String
+      first: Int
+      before: String
+      last: Int
+    ): DiscountConnection
 
     discount(id: ID!): Discount
   }
@@ -88,28 +105,19 @@ const typeDefs = gql`
 const resolvers = {
   Query: {
     trainings: (_, args, { services }) => services.findTrainings(args),
-    training: (_, { id }) =>
-      // 🕵️‍♀️ hint, use services.findTrainingById
-      fetch(`https://api.reactgraphql.academy/rest/trainings/${id}`)
-        .then(res => res.json())
-        .catch(error => console.log(error)),
+    training: (_, { id }, { services }) => services.findTrainingById(id),
 
-    discounts: _ =>
-      // 🕵️‍♀️ hint, use services.findDiscounts
-      fetch("https://api.reactgraphql.academy/rest/discounts/")
-        .then(res => res.json())
-        .catch(error => console.log(error)),
+    discounts: (_, args, { services }) => services.findDiscounts(args),
 
-    discount: (_, { id }) =>
-      // 🕵️‍♀️ hint, use services.findDiscountById
-      fetch(`https://api.reactgraphql.academy/rest/discounts/${id}`)
-        .then(res => res.json())
-        .catch(error => console.log(error))
+    discount: (_, { id }, { services }) => services.findDiscountById(id)
   },
   DateTime: GraphQLDateTime,
   OrderDirection: {
     DESC: -1,
     ASC: 1
+  },
+  Training: {
+    discounts: (parent, args, { services }) => services.findDiscountsByTrainingId(args, parent._id)
   }
 };
 
