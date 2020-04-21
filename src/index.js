@@ -64,6 +64,7 @@ const typeDefs = gql`
   type Query {
     books: [Book]
     trainings: [Training]
+    discounts: [Discount]
   }
 
   type Training {
@@ -71,6 +72,13 @@ const typeDefs = gql`
     id : ID!,
     objectives: String!, 
     curriculum: String!
+  }
+
+  type Discount {
+    id: ID!
+    code: String
+    discountPercentage: Int
+    description: String
   }
 
 `
@@ -82,7 +90,8 @@ const typeDefs = gql`
 const resolvers = {
   Query: {
     books: () => books,
-    trainings: () => trainingMockData
+    trainings: fetchTrainings,
+    discounts: fetchDiscounts
   }
 };
 
@@ -99,19 +108,19 @@ server.listen().then(({ url }) => {
 
 function fetchTrainings() {
   // More info about the fetch function? https://github.com/bitinn/node-fetch#json
-  return fetch("https://restapi.reactgraphql.academy/v1/trainings/")
+  return fetch("https://api.reactgraphql.academy/rest/trainings/")
     .then(res => res.json())
     .catch(error => console.log(error));
 }
 
 function fetchTrainingById(id) {
-  return fetch(`https://restapi.reactgraphql.academy/v1/trainings/${id}`)
+  return fetch(`https://api.reactgraphql.academy/rest/trainings/${id}`)
     .then(res => res.json())
     .catch(error => console.log(error));
 }
 
 function fetchDiscounts() {
-  return fetch("https://restapi.reactgraphql.academy/v1/discounts/")
+  return fetch("https://api.reactgraphql.academy/rest/discounts/")
     .then(res => res.json())
     .catch(error => console.log(error));
 }
@@ -123,7 +132,7 @@ function fetchTrainingByUrl(url) {
 }
 
 function fetchDiscountById(id) {
-  return fetch(`https://restapi.reactgraphql.academy/v1/discounts/${id}`)
+  return fetch(`https://api.reactgraphql.academy/rest/discounts/${id}`)
     .then(res => res.json())
     .catch(error => console.log(error));
 }
